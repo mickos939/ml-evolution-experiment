@@ -39,7 +39,7 @@ Ed Donner gjorde en miniversion av detta test där han läste produktbeskrivning
 
 *Varje punkt i diagrammet representerar en produkt. Den vågräta axeln visar det verkliga priset och den lodräta visar gissningen. Den streckade diagonalen är en perfekt träff – ju längre bort från linjen en punkt hamnar, desto större är felet.*
 
-Detta får bli vår mänskliga referenspunkt. Låt oss se hur de första enkla modellerna klarar sig.
+Detta är vår mänskliga referenspunkt. Låt oss se hur de första enkla modellerna klarar sig.
 
 ### Första jämförelsen: gissa alltid på medelpriset
 
@@ -146,11 +146,11 @@ Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
 </details>
 
 <p align="center">
-  <img src="assets/categories.png" width="39%" alt="Produktkategorier">
-  <img src="assets/prisfordelning.png" width="59%" alt="Prisfördelning">
+  <img src="assets/categories.png" width="33%" alt="Produktkategorier">
+  <img src="assets/prisfordelning.png" width="65%" alt="Prisfördelning">
 </p>
 
-*Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på **820 000 produkter** fördelat över olika kategorier (högra bilden). Kategoriernas fördelning efter det viktade urvalet. Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter (vänstra bilden).*
+*Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på **820 000 produkter** (högra bilden). Kategoriernas fördelning efter det viktade urvalet. Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter (vänstra bilden).*
 
 ### LLM-driven förädling
 
@@ -243,7 +243,7 @@ Först ut var en **Random Forest** (slumpmässig skog av beslutsträd), som tog 
 
 - **Resultat (Random Forest):** Ett snittfel på **72,28 dollar**.
 
-Därefter testade vi den moderna varianten **XGBoost** (Gradient Boosting). Istället för att bara bygga oberoende beslutsträd, tränar XGBoost träden sekventiellt, där varje nytt träd specialiserar sig på att korrigera de misstag som de tidigare träden gjorde.
+Därefter testade vi den modernare varianten **XGBoost** (Gradient Boosting). Istället för att bara bygga oberoende beslutsträd, tränar XGBoost träden sekventiellt, där varje nytt träd specialiserar sig på att korrigera de misstag som de tidigare träden gjorde.
 
 - **Resultat (XGBoost):** Felet pressas ner till **68,23 dollar**.
 
@@ -346,7 +346,7 @@ Som motvikt till de stora språkmodellerna byggde vi även två neurala nätverk
 
 *Bilden ovan visar en provkörning på ett mindre dataset vilket gav ett högre fel ($72,54) än fullkörningen som används i huvudjämförelsen.*
 
-Här visar specialiseringen sin styrka. En liten, specialtränad modell presterar i princip på samma nivå som världens mest avancerade och dyraste AI-modeller på denna specifika uppgift. Det är ett tydligt bevis på kraften i **domänspecifik specialisering**.
+Detta är ett otroligt resultat. En liten, specialtränad modell presterar i princip på samma nivå som världens mest avancerade och dyraste AI-modeller på denna specifika uppgift. Det är ett tydligt bevis på kraften i **domänspecifik specialisering**.
 
 <details><summary><strong>Teknisk fördjupning: Det enkla MLP-nätverkets arkitektur och träningsloop</strong></summary>
 
