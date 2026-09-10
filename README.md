@@ -1,12 +1,12 @@
 # En resa genom maskinlärningens historia
 
-AI-utvecklingen beskrivs ofta som en rad stora språng. Men hur stora är de egentligen om man skulle mäta dem?
+AI-utvecklingen beskrivs ofta som en rad stora språng. Men hur stora är de egentligen om man skulle försöka mäta dem?
 
-Inspirerad av [Ed Donners](https://github.com/ed-donner/llm_engineering/tree/main/week6) projekt ville jag göra en resa genom maskininlärningens utveckling och se vad varje nytt steg faktiskt tillför. Därför ställde jag **modeller från olika generationer** mot exakt samma problem, med samma data och samma måttstock – från enkel **linjär regression** och egna **neurala nät**, till moderna **språkmodeller** och skräddarsydd **fine-tuning**.
+Inspirerad av [Ed Donners](https://github.com/ed-donner/llm_engineering/tree/main/week6) projekt ville jag göra en resa genom maskininlärningens utveckling och se vad varje nytt steg faktiskt tillför. Därför ställde jag **12 modeller från olika generationer** mot exakt samma problem, med samma data och samma måttstock – från enkel **linjär regression** och egna **neurala nät**, till moderna **språkmodeller** och skräddarsydd **fine-tuning**.
 
-Själva testet var medvetet enkelt: kan en modell förutsäga priset på Amazon-produkter utifrån enbart dess beskrivning?
+Själva testet var medvetet enkelt: hur bra kan modellerna förutsäga priser på tusentals Amazon-produkter utifrån enbart deras beskrivning?
 
-Priserna i sig är inte poängen. De fungerar snarare som en gemensam måttstock – ett sätt att göra 30 års utveckling inom maskininlärning jämförbar i ett och samma experiment.
+Priserna i sig är inte poängen. De fungerar som gemensam måttstock för modellerna, ett sätt att göra 30 års AI-utveckling direkt jämförbart i ett och samma experiment.
 
 **Måttstock:** Genomsnittligt absolut prisfel (MAE, Mean Absolute Error) i dollar. Lägre är bättre.
 
@@ -27,7 +27,7 @@ Priserna i sig är inte poängen. De fungerar snarare som en gemensam måttstock
 
 
 
-## Rond 1: En mänsklig referens och några enkla modeller
+## Rond 1: En mänsklig referens och de första modellerna
 
 Innan algoritmerna släpptes lösa behövdes en mänsklig referenspunkt. Hur bra är en människa på den här uppgiften?
 
@@ -39,7 +39,7 @@ Ed Donner gjorde en miniversion av detta test där han läste produktbeskrivning
 
 *Varje punkt i diagrammet representerar en produkt. Den vågräta axeln visar det verkliga priset och den lodräta visar gissningen. Den streckade diagonalen är en perfekt träff – ju längre bort från linjen en punkt hamnar, desto större är felet.*
 
-Detta är vår mänskliga referenspunkt. Låt oss se hur de första enkla modellerna klarar sig.
+Detta får bli vår mänskliga referenspunkt. Låt oss se hur de första enkla modellerna klarar sig.
 
 ### Första jämförelsen: gissa alltid på medelpriset
 
@@ -49,7 +49,7 @@ Den enklast tänkbara lösningen är en modell som är helt blind. Den struntar 
 
 Om den mänskliga gissningen ($87,62) är riktmärket som vi jämför modellerna med så är detta den absoluta lägstanivån. Varje modell som byggs måste prestera betydligt bättre än så för att ha ett existensberättigande.
 
-### Linjär regression med dålig information
+### Linjär regression med enkel information
 
 Går det att förbättra gissningen genom att använda en linjär regressionsmodell och ge den två egenskaper att jobba med: produktens vikt och antalet tecken i beskrivningen?
 
@@ -103,7 +103,7 @@ Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
 
 
 
-## Det viktiga grundarbetet: Att bearbeta tre miljoner produktbeskrivningar
+## Det viktiga grundarbetet: Bearbeta tre miljoner produktbeskrivningar
 
 Innan vi går djupare in på testerna behöver vi titta på det nödvändiga grundarbetet. Maskininlärning bygger helt på principen **skräp in ger skräp ut**, och rå Amazon-data är extremt stökig.
 
@@ -111,7 +111,7 @@ Vi laddade ner ett gigantiskt dataset från Hugging Face med beskrivningar av ci
 
 ### Vilka produkter ska modellen få lära sig av?
 
-Att rensa bort fel och dubbletter var bara en del av arbetet. Vi behövde också välja vilka **820 000 produkter** som skulle ingå i experimentet. Om billiga produkter och ett par stora kategorier dominerar så får modellerna sämre möjlighet att lära sig resten av materialet.
+Att rensa bort fel och dubbletter var bara en del av arbetet. Vi behövde också välja vilka produkter som skulle ingå i experimentet. Om billiga produkter och ett par stora kategorier dominerar så får modellerna sämre möjlighet att lära sig resten av materialet.
 
 Därför gjorde vi ett **viktat slumpmässigt urval**. Dyrare produkter fick större chans att komma med, medan de dominerande kategorierna Automotive och Tools and Home Improvement fick lägre urvalsvikt. Syftet var att ge modellerna ett bredare material att lära sig av.
 
@@ -150,13 +150,13 @@ Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
   <img src="assets/prisfordelning.png" width="59%" alt="Prisfördelning">
 </p>
 
-*Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på 820 000 produkter fördelat över olika kategorier (högra bilden). Kategoriernas fördelning efter det viktade urvalet. Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter (vänstra bilden).*
+*Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på **820 000 produkter** fördelat över olika kategorier (högra bilden). Kategoriernas fördelning efter det viktade urvalet. Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter (vänstra bilden).*
 
 ### LLM-driven förädling
 
 Amazon-beskrivningar är kända för att vara spretiga. Säljtext, HTML-taggar, tekniska specifikationer och tillverkarens skryt blandas i en enda röra.
 
-Innan vi tränade en enda prismodell lät vi därför en liten och effektiv språkmodell (GPT-4.1 Nano) agera "digital redaktör". Genom en strikt instruktion tvingades den att koka ner varje kaotisk råtext till fem rena, strukturerade fält: Title, Category, Brand, Description och Details.
+Innan vi tränade en enda prismodell lät vi därför en liten och effektiv språkmodell (GPT-4.1 Nano) agera "digital redaktör". Genom en strikt instruktion tvingades den att koka ner varje kaotisk råtext till fem rena, strukturerade fält: *Title, Category, Brand, Description och Details.*
 
 Det kallas för *kontextdesign*. Eftersom språkmodeller bygger sitt svar steg för steg och påverkas av allt som matas in i dess kontextfönster, blir kvaliteten på indatan helt avgörande. Genom att rensa bort brus och ge modellerna optimalt strukturerad information skapar vi de bästa förutsättningarna för att det ska lära sig.
 
@@ -209,13 +209,11 @@ Vi skapade en lista på de 2 000 vanligaste och mest betydelsebärande orden i v
 
 *Med Bag-of-Words som representation börjar gissningarna äntligen leta sig upp mot den perfekta diagonalen.*
 
-Detta är ett otroligt ögonblick. En enkel, klassisk regressionsmodell som körs på en bråkdel av en sekund har precis **utklassat den mänskliga referenspunkten** (Eds $87,62) med nästan 11 dollar.
+Detta är ett otroligt ögonblick. En enkel, klassisk regressionsmodell som körs på en bråkdel av en sekund har precis **slagit den mänskliga referenspunkten** (Eds $87,62) med nästan 11 dollar.
 
-Varför räcker den här enkla metoden så långt? Därför att enskilda nyckelord i texten har en stark koppling till produktens värde. I det här fallet räknas antal förekomster av ord som *luxury*, *LED*, *leather*, *plastic.* 
+Varför når den här enkla metoden så långt? Därför att enskilda nyckelord i texten har en stark koppling till produktens värde. I det här fallet räknas antal förekomster av ord som *luxury*, *LED*, *leather*, *plastic.* 
 
-Men metoden har en svaghet: den saknar helt sammanhang. Vår *Bag-of-Words*-metod är nämligen kontextoberoende. Ordet 'fil' får till exempel exakt samma representation oavsett om texten handlar om en *datorfil*, en *körfil på motorvägen* eller en skål med *frukostfil*. 
-
-Modellerna i denna rond saknar (till skillnad från moderna språkmodeller) förmågan att låta orden färgas av varandra.
+Men metoden har en svaghet: den saknar sammanhang. Vår *Bag-of-Words*-metod är helt kontextoberoende. Ordet 'fil' får till exempel exakt samma representation oavsett om texten handlar om en *datorfil*, en *körfil på motorvägen* eller en skål med *frukostfil*. Till skillnad från moderna språkmodeller så har modellerna i denna rond inte förmågan att låta orden färgas av varandra.
 
 <details><summary><strong>Teknisk fördjupning: Så blir texten 2 000 siffror</strong></summary>
 
@@ -338,16 +336,17 @@ Fullständigt sammanhang: [Steg 4 – neurala nät och språkmodeller](notebooks
 
 Som motvikt till de stora språkmodellerna byggde vi även två neurala nätverk i PyTorch som vi sedan tränade.
 
-1. **Vårt första enkla nätverk (MLP):** Ett klassiskt åttalagers feed-forward-nätverk. Det tränades snabbt upp och landade på ett mycket respektabelt snittfel på **63,97 dollar**, vilket visade att nätverket framgångsrikt kunde lära sig icke-linjära samband i textrepresentationerna.
-2. **Vårt djupa nätverk (Deep NN):** En betydligt kraftfullare modell utrustad med residualblock, LayerNorm och dropout. Med sina **289 miljoner parametrar** är vår modell fortfarande en dvärg i jämförelse med giganter som GPT och Claude. Men den har en enorm fördel: den slipper kunna något annat. Den kan varken skriva dikter eller programmera, den kan bara värdera Amazon-produkter.
+1. **Vårt första enkla nätverk (MLP):** Ett klassiskt åttalagers feed-forward-nätverk på ca **669 000 parametrar**. Det tränades snabbt upp och landade på ett mycket respektabelt snittfel på **63,97 dollar**, vilket visade att nätverket framgångsrikt kunde lära sig icke-linjära samband i textrepresentationerna.
+   
+2. **Vårt djupa nätverk (Deep NN):** En betydligt kraftfullare modell utrustad med residualblock, LayerNorm och dropout. Med sina **289 miljoner parametrar** är detta nät betydligt mer avancerat än det förra – men fortfarande en dvärg i jämförelse med giganter som GPT och Claude. Det har dock en enorm fördel: det slipper kunna något annat. Det kan varken skriva dikter eller programmera, det kan bara värdera Amazon-produkter.
 
-- **Resultat (Eget Deep NN):** Vårt skräddarsydda nätverk landade på ett snittfel på **46,49 dollar** vid träning på hela datasetet.
+- **Resultat (Eget Deep NN):** Vårt skräddarsydda nätverk landade på ett snittfel på **46,49 dollar**.
 
 ![Deep Neural Network – egen Lite-körning](assets/deep_nn_lite.png)
 
 *Bilden ovan visar en provkörning på ett mindre dataset vilket gav ett högre fel ($72,54) än fullkörningen som används i huvudjämförelsen.*
 
-Detta är ett otroligt resultat. En liten, specialtränad modell presterar i princip på samma nivå som världens mest avancerade och dyraste AI-modeller på denna specifika uppgift. Det är ett tydligt bevis på kraften i **domänspecifik specialisering**.
+Här visar specialiseringen sin styrka. En liten, specialtränad modell presterar i princip på samma nivå som världens mest avancerade och dyraste AI-modeller på denna specifika uppgift. Det är ett tydligt bevis på kraften i **domänspecifik specialisering**.
 
 <details><summary><strong>Teknisk fördjupning: Det enkla MLP-nätverkets arkitektur och träningsloop</strong></summary>
 
@@ -435,7 +434,7 @@ Fullständigt sammanhang: [Steg 4 – neurala nät och språkmodeller](notebooks
 
 ## Rond 5: En dyrköpt läxa om fine-tuning
 
-Efter att ha sett hur bra GPT-4.1 Nano presterade i sitt grundutförande ($62,51) och hur bra vårt djupa neurala nätverk presterade tack vare specialträning ($46,49) kändes nästa steg givet: Vi gör en **fine-tuning** av GPT-4.1 Nano och låter den träna på vårt Amazon-dataset för att skapa den ultimata prissättaren.
+Efter att ha sett hur bra GPT-4.1 Nano presterade i sitt grundutförande ($62,51) och hur bra vårt djupa neurala nätverk presterade tack vare specialträning ($46,49) kändes nästa steg givet: Vi gör en **fine-tuning** av GPT-4.1 Nano och låter den träna på vårt Amazon-data för att skapa den ultimata prissättaren.
 
 Men här stötte vi på ett lärorikt bakslag.
 
@@ -557,11 +556,11 @@ Ytterligare träning är ingen garanti för bättre resultat. Även en finjuster
 
 
 
-## Vad resan säger om AI:s utveckling
+## Vad det säger om AI:s utveckling
 
 Resan genom maskininlärningens utveckling gav mig en mer nyanserad bild av vad framstegen inom AI innebär. Varje ny metod öppnar möjligheter, men hur mycket den tillför beror på uppgiften, informationen den får och arbetet bakom träningen. De stora språkmodellerna har en påtaglig styrka i att kunna ta sig an nya problem direkt. Samtidigt finns mycket kraft i äldre metoder och i modeller som tränats för ett avgränsat ändamål.
 
-Den viktigaste lärdomen är att framgångsrik AI-utveckling handlar om sund ingenjörskonst. Genom att börja med att förstå problemet, ge modellen rätt förutsättningar och låta mätningar styra varje steg, förvandlas modellvalet från en gissningslek till en ren kalkyl. Träffsäkerhet vägs då nyktert mot kostnad, tid och kontroll. Efter att ha navigerat genom flera generationer av AI-historia är det detta som jag fått lite bättre förståelse kring – att se när en enkel lösning räcker och när mer avancerad teknik gör verklig skillnad.
+Den viktigaste lärdomen är att framgångsrik AI-utveckling handlar om sund ingenjörskonst. Genom att börja med att förstå problemet, ge modellen rätt förutsättningar och låta mätningar styra, förvandlas modellvalet från en gissningslek till en ren kalkyl. Efter att ha navigerat genom 30 år av AI-historia i detta experiment är det detta som jag fått lite bättre förståelse för – när enklare lösningar räcker och när mer avancerad teknik gör verklig skillnad.
 
 ---
 
