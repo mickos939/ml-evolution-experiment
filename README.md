@@ -146,19 +146,11 @@ Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
 </details>
 
 <p align="center">
-  <img src="assets/categories.png" width="49%" alt="Produktkategorier">
-  <img src="assets/prisfordelning.png" width="49%" alt="Prisfördelning">
+  <img src="assets/categories.png" width="39%" alt="Produktkategorier">
+  <img src="assets/prisfordelning.png" width="59%" alt="Prisfördelning">
 </p>
 
 *Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på 820 000 produkter fördelat över olika kategorier (högra bilden). Kategoriernas fördelning efter det viktade urvalet. Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter (vänstra bilden).*
-
-![Prisfördelning efter urval](assets/prisfordelning.png)
-
-*Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på 820 000 produkter fördelat över olika kategorier.*
-
-![Produktkategorier i urvalet](assets/categories.png)
-
-*Kategoriernas fördelning efter det viktade urvalet. Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter.*
 
 ### LLM-driven förädling
 
@@ -237,7 +229,7 @@ X = vectorizer.fit_transform(documents)
 
 `CountVectorizer` bygger först ett ordförråd från träningsmaterialet. Varje produkt blir sedan en numerisk vektor där positionerna motsvarar ord i detta ordförråd. Modellen behöver alltså inte "läsa" text på mänskligt vis – den får ett stort antal mätbara ordsignaler att arbeta med.
 
-Fullständigt sammanhang: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
+Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
 
 </details>
 
@@ -261,7 +253,7 @@ Därefter testade vi den moderna varianten **XGBoost** (Gradient Boosting). Ist�
 
 *XGBoost lyckas fånga komplexa, icke-linjära mönster i texten, även om de allra dyraste lyxprodukterna fortfarande är svåra att pricka helt rätt.*
 
-I tider av generativ AI är det lätt att avfärda det här som "gammal teknik". Men här har en blixtsnabb och billig modell kapat det ursprungliga blinda felet med nästan 40 dollar. I en skarp produktionsmiljö drar den minimalt med resurser och har ett helt förutsägbart beteende.
+I tider av generativ AI är det lätt att avfärda det här som "gammal teknik". Men här har en blixtsnabb och billig modell kapat det ursprungliga blinda felet med nästan 40 dollar. I en skarp produktionsmiljö drar en sådan modell minimalt med resurser och har ett helt förutsägbart beteende (till skillnad från dagens språkmodeller).
 
 <details><summary><strong>Teknisk fördjupning: Samma ordrepresentation, en annan modell</strong></summary>
 
@@ -303,7 +295,7 @@ Nu kliver vi in i den moderna djupinlärningens era. Här ställde vi två helt 
 
 ### De generella jättarna (Zero-shot)
 
-Vi bad först världens ledande språkmodeller att gissa priset på produkterna utifrån beskrivningen – helt utan att de har fått träna på vårt dataset. De fick förlita sig helt på den allmänna kunskap om varumärken, material och marknadspositionering som de har byggt upp under sin gigantiska förträning (pre-training).
+Vi bad först några ledande språkmodeller att gissa priset på produkterna utifrån beskrivningen – helt utan att de har fått träna på vårt dataset. De fick förlita sig helt på den allmänna kunskap om varumärken, material och marknadspositionering som de har byggt upp under sin gigantiska förträning.
 
 Resultaten imponerade stort:
 
@@ -316,7 +308,7 @@ Resultaten imponerade stort:
 
 *De generella modellerna presterar fantastiskt bra enbart på sin breda förståelse av världen.*
 
-<details><summary><strong>Teknisk fördjupning: Hur lite kod ett sådant zero-shot-test kräver</strong></summary>
+<details><summary><strong>Teknisk fördjupning: Hur lite kod ett sådant test kräver</strong></summary>
 
 Efter allt arbete med egna modeller är kontrasten slående. Produkten skickas med in i en enkel prompt:
 
@@ -344,16 +336,16 @@ Fullständigt sammanhang: [Steg 4 – neurala nät och språkmodeller](notebooks
 
 ### Utmanarna: Våra egna neurala nätverk
 
-Som motvikt till de stora språkmodellerna byggde vi två egna neurala nätverk i PyTorch.
+Som motvikt till de stora språkmodellerna byggde vi även två neurala nätverk i PyTorch som vi sedan tränade.
 
 1. **Vårt första enkla nätverk (MLP):** Ett klassiskt åttalagers feed-forward-nätverk. Det tränades snabbt upp och landade på ett mycket respektabelt snittfel på **63,97 dollar**, vilket visade att nätverket framgångsrikt kunde lära sig icke-linjära samband i textrepresentationerna.
-2. **Vårt djupa nätverk (Deep NN):** En betydligt kraftfullare modell utrustad med residualblock, LayerNorm och dropout. Med sina **289 miljoner parametrar** är vår modell en fortfarande en dvärg i jämförelse med giganter som GPT och Claude. Men den har en enorm fördel: den slipper kunna något annat. Den kan inte skriva dikter eller programmera – den kan bara värdera Amazon-produkter.
+2. **Vårt djupa nätverk (Deep NN):** En betydligt kraftfullare modell utrustad med residualblock, LayerNorm och dropout. Med sina **289 miljoner parametrar** är vår modell fortfarande en dvärg i jämförelse med giganter som GPT och Claude. Men den har en enorm fördel: den slipper kunna något annat. Den kan varken skriva dikter eller programmera, den kan bara värdera Amazon-produkter.
 
 - **Resultat (Eget Deep NN):** Vårt skräddarsydda nätverk landade på ett snittfel på **46,49 dollar** vid träning på hela datasetet.
 
 ![Deep Neural Network – egen Lite-körning](assets/deep_nn_lite.png)
 
-*Bilden ovan visar en provkörning på ett mindre Lite-dataset vilket gav ett högre fel ($72,54) än fullkörningen som används i huvudjämförelsen.*
+*Bilden ovan visar en provkörning på ett mindre dataset vilket gav ett högre fel ($72,54) än fullkörningen som används i huvudjämförelsen.*
 
 Detta är ett otroligt resultat. En liten, specialtränad modell presterar i princip på samma nivå som världens mest avancerade och dyraste AI-modeller på denna specifika uppgift. Det är ett tydligt bevis på kraften i **domänspecifik specialisering**.
 
@@ -441,9 +433,9 @@ Fullständigt sammanhang: [Steg 4 – neurala nät och språkmodeller](notebooks
 
 
 
-## Rond 5: Den dyrköpta läxan om fine-tuning
+## Rond 5: En dyrköpt läxa om fine-tuning
 
-Efter att ha sett hur bra GPT-4.1 Nano presterade i sitt grundutförande ($62,51) och hur bra vårt djupa neurala nätverk presterade tack vare specialträning ($46,49) kändes nästa steg givet: Vi gör en **fine-tuning** av GPT-4.1 Nano och låter den träna på vårt dataset för att skapa den ultimata prissättaren.
+Efter att ha sett hur bra GPT-4.1 Nano presterade i sitt grundutförande ($62,51) och hur bra vårt djupa neurala nätverk presterade tack vare specialträning ($46,49) kändes nästa steg givet: Vi gör en **fine-tuning** av GPT-4.1 Nano och låter den träna på vårt Amazon-dataset för att skapa den ultimata prissättaren.
 
 Men här stötte vi på ett lärorikt bakslag.
 
@@ -462,7 +454,7 @@ När felet korrigerades och modellen utvärderades ordentligt kom kallduschen:
 
 ![Fine-tuning-resultat](assets/fine_tuning_resultat.png)
 
-*Den finjusterade modellen presterade i slutändan betydligt sämre än vad den gjorde i sitt grundutförande.*
+*Den finjusterade modellen presterade i slutändan sämre än vad den gjorde i sitt grundutförande.*
 
 Hur kunde finjusteringen göra modellen sämre?
 
@@ -512,7 +504,7 @@ Här är den samlade resultattavlan som visar hur de olika generationerna av mas
 
 ![Slutlig jämförelse](assets/slutresultat.png)
 
-*Genomsnittligt absolut prisfel (MAE) i dollar för samtliga metoder – lägre är bättre. Deep NN avser fullkörningen (46,49 dollar), inte Lite-körningen ovan (72,54 dollar).*
+*Genomsnittligt absolut prisfel (MAE) i dollar för samtliga metoder – lägre är bättre. Deep NN avser fullkörningen (46,49 dollar), inte Lite-körningen (72,54 dollar).*
 
 
 | Modell / metod                      | Genomsnittligt fel (MAE) | Kommentar                                                 |
@@ -565,11 +557,11 @@ Ytterligare träning är ingen garanti för bättre resultat. Även en finjuster
 
 
 
-## Vad resan säger om AI:s utveckling hittills
+## Vad resan säger om AI:s utveckling
 
-Resan genom maskininlärningens utveckling gav mig en mer nyanserad bild av vad framsteg inom AI innebär. Varje ny metod öppnar möjligheter, men hur mycket den tillför beror på uppgiften, informationen den får och arbetet bakom träningen. De stora språkmodellerna har en påtaglig styrka i att kunna ta sig an nya problem direkt. Samtidigt finns mycket kraft i äldre metoder och i modeller som tränats för ett enda, avgränsat ändamål.
+Resan genom maskininlärningens utveckling gav mig en mer nyanserad bild av vad framstegen inom AI innebär. Varje ny metod öppnar möjligheter, men hur mycket den tillför beror på uppgiften, informationen den får och arbetet bakom träningen. De stora språkmodellerna har en påtaglig styrka i att kunna ta sig an nya problem direkt. Samtidigt finns mycket kraft i äldre metoder och i modeller som tränats för ett avgränsat ändamål.
 
-Det jag tar med mig är därför ett lämpligt arbetssätt: börja med att förstå problemet, ge modellen användbar information och låt en tydlig utvärdering visa vad nästa steg faktiskt tillför. Då blir modellvalet ett konkret ingenjörsbeslut där träffsäkerhet vägs mot kostnad, tid och kontroll. Efter den här experimentet genom flera generationer av AI är det just det som jag fått bättre förståelse kring — att kunna bedömma när en enkel lösning räcker och när mer avancerad teknik gör verklig skillnad.
+Den viktigaste lärdomen är att framgångsrik AI-utveckling handlar om sund ingenjörskonst. Genom att börja med att förstå problemet, ge modellen rätt förutsättningar och låta mätningar styra varje steg, förvandlas modellvalet från en gissningslek till en ren kalkyl. Träffsäkerhet vägs då nyktert mot kostnad, tid och kontroll. Efter att ha navigerat genom flera generationer av AI-historia är det detta som jag fått lite bättre förståelse kring – att se när en enkel lösning räcker och när mer avancerad teknik gör verklig skillnad.
 
 ---
 
@@ -577,7 +569,7 @@ Det jag tar med mig är därför ett lämpligt arbetssätt: börja med att förs
 
 ## Kod och originalnotebooks
 
-De fullständiga notebook-exporterna finns kvar som referens. Länkarna nedan utgår från projektets `notebooks/`-mapp. HTML-filerna kan laddas ner och öppnas i en webbläsare för att visa den renderade notebooken.
+De fullständiga notebook-exporterna hittar du nedan. HTML-filerna kan laddas ner och öppnas i en webbläsare för att visa den renderade notebooken.
 
 - [Steg 1 – dataurval och tvätt](notebooks/steg1.html)
 - [Steg 2 – LLM-förädling](notebooks/steg2.html)
