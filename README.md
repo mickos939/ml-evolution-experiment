@@ -1,8 +1,8 @@
 # En resa genom maskinlärningens historia
 
-AI-utvecklingen beskrivs ofta som en rad stora språng. Men hur stora är de egentligen när man försöker mäta dem på samma villkor?
+AI-utvecklingen beskrivs ofta som en rad stora språng. Men hur stora är de egentligen om man skulle mäta dem?
 
-Inspirerad av [Ed Donners](https://github.com/ed-donner/llm_engineering/tree/main/week6) projekt ville jag göra en resa genom maskininlärningens utveckling och se vad varje nytt steg faktiskt tillför. Därför ställde jag modeller från olika generationer mot exakt samma problem, med samma data och samma måttstock – från enkel linjär regression och egna neurala nät, till moderna språkmodeller och skräddarsydd fine-tuning.
+Inspirerad av [Ed Donners](https://github.com/ed-donner/llm_engineering/tree/main/week6) projekt ville jag göra en resa genom maskininlärningens utveckling och se vad varje nytt steg faktiskt tillför. Därför ställde jag **modeller från olika generationer** mot exakt samma problem, med samma data och samma måttstock – från enkel **linjär regression** och egna **neurala nät**, till moderna **språkmodeller** och skräddarsydd **fine-tuning**.
 
 Själva testet var medvetet enkelt: kan en modell förutsäga priset på Amazon-produkter utifrån enbart dess beskrivning?
 
@@ -27,7 +27,7 @@ Priserna i sig är inte poängen. De fungerar snarare som en gemensam måttstock
 
 
 
-## Rond 1: En mänsklig referens och de första enkla modellerna
+## Rond 1: En mänsklig referens och några enkla modeller
 
 Innan algoritmerna släpptes lösa behövdes en mänsklig referenspunkt. Hur bra är en människa på den här uppgiften?
 
@@ -51,7 +51,7 @@ Om den mänskliga gissningen ($87,62) är riktmärket som vi jämför modellerna
 
 ### Linjär regression med dålig information
 
-Går det att förbättra gissningen genom att använda en linjär regressionsmodell och ge den två enkla egenskaper att jobba med: produktens vikt och antalet tecken i den sammanfattade beskrivningen?
+Går det att förbättra gissningen genom att använda en linjär regressionsmodell och ge den två egenskaper att jobba med: produktens vikt och antalet tecken i beskrivningen?
 
 - **Resultat (Enkel regression):** Ett genomsnittligt fel på **101,56 dollar**.
 
@@ -144,6 +144,11 @@ Vi bestämmer alltså inte exakt vilka produkter som ska komma med, men påverka
 Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
 
 </details>
+
+<p align="center">
+  <img src="assets/prisfordelning.png" width="49%" alt="Prisfördelning">
+  <img src="assets/categories.png" width="49%" alt="Produktkategorier">
+</p>
 
 ![Prisfördelning efter urval](assets/prisfordelning.png)
 
