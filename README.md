@@ -67,7 +67,8 @@ Resultatet blev knappt en mätbar förbättring. Men det är inte den linjära r
 
 *Det finns inget enkelt mönster mellan hur mycket en tillverkare skriver och vad produkten kostar. För att lyckas bättre måste modellerna på något sätt få tillgång till innehållet och förså orden i texten.*
 
-**Visa teknisk fördjupning: Så blir produktens egenskaper en prisgissning**
+<details>
+<summary><strong>Visa teknisk fördjupning: Så blir produktens egenskaper en prisgissning</strong></summary>
 
 Först plockas de två huvudsakliga egenskaperna ut: produktens vikt och längden på dess sammanfattning. En extra markering anger om vikten saknas:
 
@@ -98,7 +99,7 @@ model.fit(X_train, y_train)
 Modellen lär sig hur mycket varje egenskap ska påverka prisgissningen. Men den får fortfarande ingen information om vad produkten faktiskt är. Den kan justera sin gissning efter vikt och textlängd, men saknar de ledtrådar som skiljer exempelvis ett enkelt tillbehör från en avancerad apparat.
 
 Fullständigt sammanhang: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
-
+</details>
 ---
 
 
