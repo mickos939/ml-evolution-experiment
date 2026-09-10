@@ -1,16 +1,14 @@
-# En resa genom maskinlärningens historia – När behöver vi egentligen mer avancerad AI?
+# En resa genom maskinlärningens historia
 
 AI-utvecklingen beskrivs ofta som en rad stora språng. Men hur stora är de egentligen när man försöker mäta dem på samma villkor?
 
-Inspirerad av [Ed Donners](https://github.com/ed-donner/llm_engineering/tree/main/week6) projekt ville jag göra en resa genom maskininlärningens utveckling och se vad varje nytt steg faktiskt tillför. Därför ställde jag **modeller från olika generationer mot exakt samma problem**, med samma data och samma måttstock – från enkel linjär regression och egna neurala nät till toppmoderna språkmodeller och slutligen skräddarsydd fine-tuning.
+Inspirerad av [Ed Donners](https://github.com/ed-donner/llm_engineering/tree/main/week6) projekt ville jag göra en resa genom maskininlärningens utveckling och se vad varje nytt steg faktiskt tillför. Därför ställde jag **modeller från olika generationer mot exakt samma problem**, med samma data och samma måttstock – från enkel linjär regression och egna neurala nät, till toppmoderna språkmodeller och slutligen skräddarsydd fine-tuning.
 
 Själva testet var medvetet enkelt: kan en modell förutsäga priset på olika Amazon-produkter utifrån enbart dess beskrivning?
 
-Priserna är egentligen inte poängen. De fungerar snarare som en gemensam måttstock – ett sätt att göra flera decenniers utveckling inom maskininlärning direkt jämförbar i ett och samma experiment.
+Priserna i sig är inte poängen. De fungerar snarare som en gemensam måttstock – ett sätt att göra flera decenniers utveckling inom maskininlärning jämförbar i ett och samma experiment.
 
 **Måttstock:** Genomsnittligt absolut prisfel (MAE, Mean Absolute Error) i dollar. Lägre är bättre.
-
-**Notering:** Resultaten gäller det här experimentet. Den mänskliga referensen omfattar 100 produkter; Deep NN-diagrammet visar en separat körning på ett mindre dataset. Kodblocken är utdrag ur projektets notebooks och förutsätter deras importer, data och övriga förberedelser.
 
 ## Innehåll
 
@@ -41,7 +39,7 @@ Ed Donner gjorde en miniversion av detta test där han läste produktbeskrivning
 
 *Varje punkt i diagrammet representerar en produkt. Den vågräta axeln visar det verkliga priset och den lodräta visar gissningen. Den streckade diagonalen är en perfekt träff – ju längre bort från linjen en punkt hamnar, desto större är felet.*
 
-Detta är vår mänskliga ribba i testet. Låt oss se hur de första matematiska modellerna klarar sig.
+Detta är vår mänskliga jämförelsepunkt. Låt oss se hur de första matematiska modellerna klarar sig.
 
 ### Första jämförelsen: gissa alltid på medelpriset
 
@@ -49,11 +47,11 @@ Den enklast tänkbara lösningen är en modell som är helt blind. Den struntar 
 
 - **Resultat (Gissa medelpris):** Ett genomsnittligt fel på **106,18 dollar**.
 
-Om den mänskliga gissningen ($87,62) är riktmärket så är detta den absoluta lägstanivån. Varje modell som byggs efter detta måste prestera betydligt bättre än så för att ha något existensberättigande.
+Om den mänskliga gissningen ($87,62) är riktmärket så är detta den absoluta lägstanivån. Varje modell som byggs efter detta måste prestera betydligt bättre än så för att ha ett existensberättigande.
 
 ### Linjär regression med dålig information
 
-Går det att förbättra gissningen genom att använda en linjär regressionsmodell och ge den två ganska simpla egenskaper: produktens vikt och antalet tecken i den sammanfattade beskrivningen?
+Går det att förbättra gissningen genom att använda en linjär regressionsmodell och ge den två ganska enkla egenskaper: produktens vikt och antalet tecken i den sammanfattade beskrivningen?
 
 - **Resultat (Enkel regression):** Ett genomsnittligt fel på **101,56 dollar**.
 
@@ -105,15 +103,15 @@ Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
 
 
 
-## Det viktiga grundarbetet: Att arbeta med tre miljoner produktbeskrivningar
+## Det viktiga grundarbetet: Att bearbeta tre miljoner produktbeskrivningar
 
-Innan vi går djupare in på testerna behöver vi titta på det nödvändiga grundarbetet. Maskininlärning bygger helt på principen **skräp in ger skräp ut** – och rå Amazon-data är extremt stökig.
+Innan vi går djupare in på testerna behöver vi titta på det nödvändiga grundarbetet. Maskininlärning bygger helt på principen **skräp in ger skräp ut**, och rå Amazon-data är extremt spretig.
 
 Vi laddade ner ett gigantiskt dataset från Hugging Face med beskrivningar av cirka 3 miljoner produkter. Vid en manuell granskning hittades till exempel en mikrovågsugn för **21 000 dollar**. Det visade sig vara en professionell TurboChef-ugn avsedd för restaurangkök. Även om priset var korrekt, är det en outlier som skulle förvirra våra modeller. Prisspannet avgränsades därför till mer normala konsumentnivåer: **0,50 till 999,49 dollar**.
 
 ### Ett viktat urval: Vilka produkter ska modellen få lära sig av?
 
-Att rensa bort fel och dubbletter var bara en del av arbetet. Vi behövde också välja vilka **820 000 produkter** som skulle ingå i experimentet. Om billiga produkter och några stora kategorier dominerar materialet får modellerna mindre möjlighet att lära sig resten av variationen.
+Att rensa bort fel och dubbletter var bara en del av arbetet. Vi behövde också välja vilka **820 000 produkter** som skulle ingå i experimentet. Om billiga produkter och ett par stora kategorier dominerar får modellerna sämre möjlighet att lära sig resten av materialet.
 
 Därför gjorde vi ett **viktat slumpmässigt urval**. Dyrare produkter fick större chans att komma med, medan de dominerande kategorierna Automotive och Tools and Home Improvement fick lägre urvalsvikt. Syftet var att ge modellerna ett bredare material att lära sig av.
 
@@ -149,19 +147,19 @@ Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
 
 ![Prisfördelning efter urval](assets/prisfordelning.png)
 
-*Efter att ha rensat bort extrema outliers och dubbletter återstod ett välbalanserat dataset på 820 000 produkter fördelat över olika kategorier.*
+*Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på 820 000 produkter fördelat över olika kategorier.*
 
 ![Produktkategorier i urvalet](assets/categories.png)
 
-*Kategoriernas fördelning efter det viktade urvalet. Verktyg och hemförbättring, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter.*
+*Kategoriernas fördelning efter det viktade urvalet. Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter.*
 
 ### Kontextdesign: LLM-driven förädling
 
 Amazon-beskrivningar är kända för att vara spretiga. Säljtext, HTML-taggar, tekniska specifikationer och tillverkarens skryt blandas i en enda röra.
 
-Innan vi tränade en enda prismodell lät vi därför en liten och effektiv språkmodell (GPT-4.1 Nano) agera "digital redaktör". Genom en strikt instruktion tvingades den att koka ner varje kaotisk råtext till fem rena, strukturerade fält: **Title, Category, Brand, Description och Details**.
+Innan vi tränade en enda prismodell lät vi därför en liten och effektiv språkmodell (GPT-4.1 Nano) agera "digital redaktör". Genom en strikt instruktion tvingades den att koka ner varje kaotisk råtext till fem rena, strukturerade fält: Title, Category, Brand, Description och Details.
 
-Det kallas för *kontextdesign*. Eftersom en språkmodell bygger sitt svar steg för steg och påverkas av allt som ligger i dess kontextfönster, blir kvaliteten på indatan helt avgörande. Genom att rensa bort allt brus och ge modellerna optimalt strukturerad information i förväg skapar vi de bästa förutsättningarna för att algoritmerna ska lyckas.
+Det kallas för *kontextdesign*. Eftersom språkmodeller bygger sitt svar steg för steg och påverkas av det som matas in i dess kontextfönster, blir kvaliteten på indatan helt avgörande. Genom att rensa bort onödigt brus och ge modellerna optimalt strukturerad information skapar vi de bästa förutsättningarna för att det ska lära sig.
 
 <details><summary><strong>Teknisk fördjupning: Instruktionen till språkmodellen</strong></summary>
 
@@ -192,7 +190,7 @@ Cost: 0.006 cents
 
 Se mer: [Steg 2 – LLM-förädling](notebooks/steg2.html).
 
-Poängen här är att hundratusentals spretiga produktposter kunde pressas in i exakt samma struktur innan de nådde prismodellerna. Det gjorde det mycket lättare för dem att lära sig.
+Poängen här är att hundratusentals spretiga produktposter pressades in i exakt samma struktur innan de nådde prismodellerna. Det gjorde det mycket lättare för dem att lära sig.
 
 </details>
 
@@ -204,7 +202,7 @@ Poängen här är att hundratusentals spretiga produktposter kunde pressas in i 
 
 Hur får man en matematisk regressionsformel att förstå skriven text? Vi testar den klassiska metoden **Bag-of-Words**.
 
-Vi skapade en lista på de 2 000 vanligaste och mest betydelsebärande orden i våra nystädade produktbeskrivningar. Varje produkt översätts sedan till en lång vektor (en rad med 2 000 siffror) som helt enkelt anger hur ofta ord som *luxury*, *LED*, *leather*, *plastic* eller *Schlage* förekommer i texten.
+Vi skapade en lista på de 2 000 vanligaste och mest betydelsebärande orden i våra nystädade produktbeskrivningar. Varje produkt översätts sedan till en lång vektor (en rad med 2 000 siffror) som helt enkelt anger hur ofta ord som *luxury*, *LED*, *leather* eller *plastic* förekommer i texten.
 
 - **Resultat (Bag-of-Words):** Felet rasar till **76,81 dollar**.
 
