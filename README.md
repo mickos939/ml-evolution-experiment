@@ -163,7 +163,7 @@ Innan vi tränade en enda prismodell lät vi därför en liten och effektiv spr�
 
 Det kallas för *kontextdesign*. Eftersom en språkmodell bygger sitt svar steg för steg och påverkas av allt som ligger i dess kontextfönster, blir kvaliteten på indatan helt avgörande. Genom att rensa bort allt brus och ge modellerna optimalt strukturerad information i förväg skapar vi de bästa förutsättningarna för att algoritmerna ska lyckas.
 
-**Visa teknisk fördjupning: Så såg instruktionen till språkmodellen ut**
+<details><summary><strong>Teknisk fördjupning: Instruktionen till språkmodellen</strong></summary>
 
 En kort systemprompt användes för att ge produktbeskrivningarna ett konsekvent format:
 
@@ -190,9 +190,11 @@ Output tokens: 86
 Cost: 0.006 cents
 ```
 
-Fullständigt sammanhang: [Steg 2 – LLM-förädling](notebooks/steg2.html).
+Se mer: [Steg 2 – LLM-förädling](notebooks/steg2.html).
 
 Poängen här är att hundratusentals spretiga produktposter kunde pressas in i exakt samma struktur innan de nådde prismodellerna. Det gjorde det mycket lättare för dem att lära sig.
+
+</details>
 
 ---
 
@@ -218,7 +220,7 @@ Men metoden har en svaghet: den saknar helt sammanhang. Vår *Bag-of-Words*-meto
 
 Modellerna i denna rond saknar (till skillnad från moderna språkmodeller) förmågan att låta orden färgas av varandra.
 
-**Visa teknisk fördjupning: Så blir texten 2 000 siffror**
+<details><summary><strong>Teknisk fördjupning: Så blir texten 2 000 siffror</strong></summary>
 
 Själva omvandlingen är förvånansvärt kompakt i scikit-learn:
 
@@ -231,6 +233,8 @@ X = vectorizer.fit_transform(documents)
 `CountVectorizer` bygger först ett ordförråd från träningsmaterialet. Varje produkt blir sedan en numerisk vektor där positionerna motsvarar ord i detta ordförråd. Modellen behöver alltså inte "läsa" text på mänskligt vis – den får ett stort antal mätbara ordsignaler att arbeta med.
 
 Fullständigt sammanhang: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
+
+</details>
 
 ---
 
@@ -254,7 +258,7 @@ Därefter testade vi den moderna varianten **XGBoost** (Gradient Boosting). Ist�
 
 I tider av generativ AI är det lätt att avfärda det här som "gammal teknik". Men här har en blixtsnabb och billig modell kapat det ursprungliga blinda felet med nästan 40 dollar. I en skarp produktionsmiljö drar den minimalt med resurser och har ett helt förutsägbart beteende.
 
-**Visa teknisk fördjupning: Samma ordrepresentation, en annan modell**
+<details><summary><strong>Teknisk fördjupning: Samma ordrepresentation, en annan modell</strong></summary>
 
 `X` innehåller samma ordräkningar som användes för den textbaserade regressionen och `prices` innehåller de korrekta priserna. Här får XGBoost arbeta med den informationen:
 
@@ -280,7 +284,9 @@ def xg_boost(item):
 
 `transform` återanvänder det befintliga ordförrådet, så att orden hamnar på samma positioner som under träningen. `max(0, ...)` hindrar modellen från att lämna ett negativt pris.
 
-Fullständigt sammanhang: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
+Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
+
+</details>
 
 ---
 
@@ -305,7 +311,7 @@ Resultaten imponerade stort:
 
 *De generella modellerna presterar fantastiskt bra enbart på sin breda förståelse av världen.*
 
-**Visa teknisk fördjupning: Hur lite kod ett sådant zero-shot-test kräver**
+<details><summary><strong>Teknisk fördjupning: Hur lite kod ett sådant zero-shot-test kräver</strong></summary>
 
 Efter allt arbete med egna modeller är kontrasten slående. Produkten skickas med in i en enkel prompt:
 
@@ -329,6 +335,8 @@ Ingen träning på prisdatan görs i förväg. Modellen får bara produktbeskriv
 
 Fullständigt sammanhang: [Steg 4 – neurala nät och språkmodeller](notebooks/steg4.html).
 
+</details>
+
 ### Utmanarna: Våra egna neurala nätverk
 
 Som motvikt till de stora språkmodellerna byggde vi två egna neurala nätverk i PyTorch.
@@ -344,7 +352,7 @@ Som motvikt till de stora språkmodellerna byggde vi två egna neurala nätverk 
 
 Detta är ett otroligt resultat. En liten, specialtränad modell presterar i princip på samma nivå som världens mest avancerade och dyraste AI-modeller på denna specifika uppgift. Det är ett tydligt bevis på kraften i **domänspecifik specialisering**.
 
-**Visa teknisk fördjupning: Det enkla MLP-nätverkets arkitektur och träningsloop**
+<details><summary><strong>Teknisk fördjupning: Det enkla MLP-nätverkets arkitektur och träningsloop</strong></summary>
 
 Innan texten når nätverket omvandlas den till en numerisk representation med 5 000 dimensioner:
 
@@ -422,6 +430,8 @@ Modellen gör först en gissning, mäter felet mot facit, räknar bakåt hur nä
 
 Fullständigt sammanhang: [Steg 4 – neurala nät och språkmodeller](notebooks/steg4.html).
 
+</details>
+
 ---
 
 
@@ -455,7 +465,7 @@ Detta är en välkänd risk inom AI-träning. När man finjusterar en modell på
 
 Slutsatsen blir därför: **börja alltid med att optimera din prompt och din kontext innan du väljer att ge dig på fine-tuning.**
 
-**Visa teknisk fördjupning: Hur fine-tuning-jobbet konfigurerades**
+<details><summary><strong>Teknisk fördjupning: Hur fine-tuning-jobbet konfigurerades</strong></summary>
 
 Varje träningsexempel bestod här av en instruktionsprompt och det korrekta svar som modellen ska efterlikna:
 
@@ -483,7 +493,9 @@ openai.fine_tuning.jobs.create(
 
 Skillnaden mot zero-shot-testet är alltså att modellens grundläggande vikter justeras permanent under processen.
 
-Fullständigt sammanhang: [Steg 5 – fine-tuning](notebooks/steg5.html).
+Se mer: [Steg 5 – fine-tuning](notebooks/steg5.html).
+
+</details>
 
 ---
 
