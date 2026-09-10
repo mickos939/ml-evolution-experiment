@@ -67,8 +67,7 @@ Resultatet blev knappt en mätbar förbättring. Men det är inte den linjära r
 
 *Det finns inget enkelt mönster mellan hur mycket en tillverkare skriver och vad produkten kostar. För att lyckas bättre måste modellerna på något sätt få tillgång till innehållet och förså orden i texten.*
 
-<details>
-<summary><strong>Visa teknisk fördjupning: Så blir produktens egenskaper en prisgissning</strong></summary>
+<details><summary><strong>Teknisk fördjupning: Så blir produktens egenskaper en prisgissning</strong></summary>
 
 Först plockas de två huvudsakliga egenskaperna ut: produktens vikt och längden på dess sammanfattning. En extra markering anger om vikten saknas:
 
@@ -98,8 +97,10 @@ model.fit(X_train, y_train)
 
 Modellen lär sig hur mycket varje egenskap ska påverka prisgissningen. Men den får fortfarande ingen information om vad produkten faktiskt är. Den kan justera sin gissning efter vikt och textlängd, men saknar de ledtrådar som skiljer exempelvis ett enkelt tillbehör från en avancerad apparat.
 
-Fullständigt sammanhang: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
+Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
+
 </details>
+
 ---
 
 
@@ -116,7 +117,7 @@ Att rensa bort fel och dubbletter var bara en del av arbetet. Vi behövde också
 
 Därför gjorde vi ett **viktat slumpmässigt urval**. Dyrare produkter fick större chans att komma med, medan de dominerande kategorierna Automotive och Tools and Home Improvement fick lägre urvalsvikt. Syftet var att ge modellerna ett bredare material att lära sig av.
 
-**Visa teknisk fördjupning: Så styrdes urvalet av produkter**
+<details><summary><strong>Teknisk fördjupning: Så styrdes urvalet av produkter</strong></summary>
 
 Priserna omvandlas först till värden mellan 0 och 1. Dessa används sedan för att ge varje produkt en urvalsvikt:
 
@@ -142,7 +143,9 @@ sample = [items[i] for i in idx]
 
 Vi bestämmer alltså inte exakt vilka produkter som ska komma med, men påverkar sannolikheten för att de väljs. Det lilla tillägget `1e-9` skyddar beräkningen mot division med noll om alla priser skulle vara lika.
 
-Fullständigt sammanhang: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
+Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
+
+</details>
 
 ![Prisfördelning efter urval](assets/prisfordelning.png)
 
