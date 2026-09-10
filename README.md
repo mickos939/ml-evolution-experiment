@@ -150,9 +150,11 @@ Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
   <img src="assets/categories.png" width="49%" alt="Produktkategorier">
 </p>
 
+*Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på 820 000 produkter fördelat över olika kategorier.*
+
 ![Prisfördelning efter urval](assets/prisfordelning.png)
 
-*Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på 820 000 produkter fördelat över olika kategorier.*
+*Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på 820 000 produkter fördelat över olika kategorier (vänster bild). Kategoriernas fördelning efter det viktade urvalet. Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter (höger bild).*
 
 ![Produktkategorier i urvalet](assets/categories.png)
 
