@@ -10,6 +10,7 @@ Priserna i sig är inte poängen. De fungerar som gemensam måttstock för model
 
 **Måttstock:** Genomsnittligt absolut prisfel (MAE, Mean Absolute Error) i dollar. Lägre är bättre.
 
+
 ## Innehåll
 
 - [Rond 1 – mänsklig referens och enkla modeller](#rond-1) 
@@ -24,83 +25,6 @@ Priserna i sig är inte poängen. De fungerar som gemensam måttstock för model
 - [Kod och originalnotebooks](#notebooks)
 
 ---
-
-
-
-## Rond 1: En mänsklig referens och de första modellerna
-
-Innan algoritmerna släpptes lösa behövdes en mänsklig referenspunkt. Hur bra är en människa på den här uppgiften?
-
-Ed Donner gjorde en miniversion av detta test där han läste produktbeskrivningarna för 100 slumpmässigt utvalda Amazon-produkter och skrev ner sina gissningar. Facit visade då att han i genomsnitt gissade fel med **87,62 dollar per produkt**.
-
-- **Resultat (Människa):** I genomsnitt **87,62 dollar** felgissat.
-
-![Mänskliga prisgissningar](assets/human.png)
-
-*Varje punkt i diagrammet representerar en produkt. Den vågräta axeln visar det verkliga priset och den lodräta visar gissningen. Den streckade diagonalen är en perfekt träff – ju längre bort från linjen en punkt hamnar, desto större är felet.*
-
-Detta är vår mänskliga referenspunkt. Låt oss se hur de första enkla modellerna klarar sig.
-
-### Första jämförelsen: gissa alltid på medelpriset
-
-Den enklast tänkbara lösningen är en modell som är helt blind. Den struntar helt och hållet i produktbeskrivningen och gissar konsekvent på medelpriset för alla produkter i träningsdatan (140,57 dollar).
-
-- **Resultat (Gissa medelpris):** Ett genomsnittligt fel på **106,18 dollar**.
-
-Om den mänskliga gissningen ($87,62) är riktmärket som vi jämför modellerna med så är detta den absoluta lägstanivån. Varje modell som byggs måste prestera betydligt bättre än så för att ha ett existensberättigande.
-
-### Linjär regression med enkel information
-
-Går det att förbättra gissningen genom att använda en linjär regressionsmodell och ge den två egenskaper att jobba med: produktens vikt och antalet tecken i beskrivningen?
-
-- **Resultat (Enkel regression):** Ett genomsnittligt fel på **101,56 dollar**.
-
-![Linjär regression med stela variabler](assets/linear_regression.png)
-
-*Med endast vikt och beskrivningens längd som indata kan den linjära regressionen i princip bara lägga en helt platt linje strax under medelvärdet.*
-
-Resultatet blev knappt en mätbar förbättring. Men det är inte den linjära regressionens fel – det är vi som gav den dåliga förutsättningar. Vikten på ett paket avslöjar sällan om det innehåller billig plast eller dyr elektronik. Inte heller beskrivningens längd har något som helst samband med priset, vilket visas av spridningsdiagrammet nedan:
-
-![Pris mot textlängd](assets/pris_mot_textlangd.png)
-
-*Det finns inget enkelt mönster mellan hur mycket en tillverkare skriver och vad produkten kostar. För att lyckas bättre måste modellerna på något sätt få tillgång till innehållet och förså orden i texten.*
-
-<details><summary><strong>Teknisk fördjupning: Så blir produktens egenskaper en prisgissning</strong></summary>
-
-Först plockas de två huvudsakliga egenskaperna ut: produktens vikt och längden på dess sammanfattning. En extra markering anger om vikten saknas:
-
-```python
-def get_features(item):
-    return {
-        "weight": item.weight,
-        "weight_unknown": 1 if item.weight == 0 else 0,
-        "text_length": len(item.summary)
-    }
-```
-
-`weight_unknown` blir 1 när vikten är okänd och annars 0. Det gör att en saknad vikt kan behandlas separat från en uppmätt vikt.
-
-Egenskaperna samlas i tabellen `train_df` tillsammans med produktens pris. Sedan tränas modellen:
-
-```python
-feature_columns = ['weight', 'weight_unknown', 'text_length']
-
-X_train = train_df[feature_columns]
-y_train = train_df['price']
-
-# Train a Linear Regression
-model = LinearRegression()
-model.fit(X_train, y_train)
-```
-
-Modellen lär sig hur mycket varje egenskap ska påverka prisgissningen. Men den får fortfarande ingen information om vad produkten faktiskt är. Den kan justera sin gissning efter vikt och textlängd, men saknar de ledtrådar som skiljer exempelvis ett enkelt tillbehör från en avancerad apparat.
-
-Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
-
-</details>
-
----
-
 
 
 ## Det viktiga grundarbetet: Bearbeta tre miljoner produktbeskrivningar
@@ -196,6 +120,80 @@ Poängen här är att hundratusentals spretiga produktposter kunde pressas in i 
 ---
 
 
+## Rond 1: En mänsklig referens och de första modellerna
+
+Innan algoritmerna släpptes lösa behövdes en mänsklig referenspunkt. Hur bra är en människa på den här uppgiften?
+
+Ed Donner gjorde en miniversion av detta test där han läste produktbeskrivningarna för 100 slumpmässigt utvalda Amazon-produkter och skrev ner sina gissningar. Facit visade då att han i genomsnitt gissade fel med **87,62 dollar per produkt**.
+
+- **Resultat (Människa):** I genomsnitt **87,62 dollar** felgissat.
+
+![Mänskliga prisgissningar](assets/human.png)
+
+*Varje punkt i diagrammet representerar en produkt. Den vågräta axeln visar det verkliga priset och den lodräta visar gissningen. Den streckade diagonalen är en perfekt träff – ju längre bort från linjen en punkt hamnar, desto större är felet.*
+
+Detta är vår mänskliga referenspunkt. Låt oss se hur de första enkla modellerna klarar sig.
+
+### Första jämförelsen: gissa alltid på medelpriset
+
+Den enklast tänkbara lösningen är en modell som är helt blind. Den struntar helt och hållet i produktbeskrivningen och gissar konsekvent på medelpriset för alla produkter i träningsdatan (140,57 dollar).
+
+- **Resultat (Gissa medelpris):** Ett genomsnittligt fel på **106,18 dollar**.
+
+Om den mänskliga gissningen ($87,62) är riktmärket som vi jämför modellerna med så är detta den absoluta lägstanivån. Varje modell som byggs måste prestera betydligt bättre än så för att ha ett existensberättigande.
+
+### Linjär regression med enkel information
+
+Går det att förbättra gissningen genom att använda en linjär regressionsmodell och ge den två egenskaper att jobba med: produktens vikt och antalet tecken i beskrivningen?
+
+- **Resultat (Enkel regression):** Ett genomsnittligt fel på **101,56 dollar**.
+
+![Linjär regression med stela variabler](assets/linear_regression.png)
+
+*Med endast vikt och beskrivningens längd som indata kan den linjära regressionen i princip bara lägga en helt platt linje strax under medelvärdet.*
+
+Resultatet blev knappt en mätbar förbättring. Men det är inte den linjära regressionens fel – det är vi som gav den dåliga förutsättningar. Vikten på ett paket avslöjar sällan om det innehåller billig plast eller dyr elektronik. Inte heller beskrivningens längd har något som helst samband med priset, vilket visas av spridningsdiagrammet nedan:
+
+![Pris mot textlängd](assets/pris_mot_textlangd.png)
+
+*Det finns inget enkelt mönster mellan hur mycket en tillverkare skriver och vad produkten kostar. För att lyckas bättre måste modellerna på något sätt få tillgång till innehållet och förså orden i texten.*
+
+<details><summary><strong>Teknisk fördjupning: Så blir produktens egenskaper en prisgissning</strong></summary>
+
+Först plockas de två huvudsakliga egenskaperna ut: produktens vikt och längden på dess sammanfattning. En extra markering anger om vikten saknas:
+
+```python
+def get_features(item):
+    return {
+        "weight": item.weight,
+        "weight_unknown": 1 if item.weight == 0 else 0,
+        "text_length": len(item.summary)
+    }
+```
+
+`weight_unknown` blir 1 när vikten är okänd och annars 0. Det gör att en saknad vikt kan behandlas separat från en uppmätt vikt.
+
+Egenskaperna samlas i tabellen `train_df` tillsammans med produktens pris. Sedan tränas modellen:
+
+```python
+feature_columns = ['weight', 'weight_unknown', 'text_length']
+
+X_train = train_df[feature_columns]
+y_train = train_df['price']
+
+# Train a Linear Regression
+model = LinearRegression()
+model.fit(X_train, y_train)
+```
+
+Modellen lär sig hur mycket varje egenskap ska påverka prisgissningen. Men den får fortfarande ingen information om vad produkten faktiskt är. Den kan justera sin gissning efter vikt och textlängd, men saknar de ledtrådar som skiljer exempelvis ett enkelt tillbehör från en avancerad apparat.
+
+Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
+
+</details>
+
+---
+
 
 ## Rond 2: När modellen får tillgång till "orden" förbättras resultatet
 
@@ -232,7 +230,6 @@ Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
 </details>
 
 ---
-
 
 
 ## Rond 3: Klassisk ML – Hur långt räcker de gamla trotjänarna?
@@ -284,7 +281,6 @@ Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
 </details>
 
 ---
-
 
 
 ## Rond 4: Egna neurala nät mot färdigtränade språkmodeller
@@ -432,7 +428,6 @@ Fullständigt sammanhang: [Steg 4 – neurala nät och språkmodeller](notebooks
 ---
 
 
-
 ## Rond 5: En dyrköpt läxa om fine-tuning
 
 Efter att ha sett hur bra GPT-4.1 Nano presterade i sitt grundutförande ($62,51) och hur bra vårt djupa neurala nätverk presterade tack vare specialträning ($46,49) kändes nästa steg givet: Vi gör en **fine-tuning** av GPT-4.1 Nano och låter den träna på vårt Amazon-data för att skapa den ultimata prissättaren.
@@ -497,7 +492,6 @@ Se mer: [Steg 5 – fine-tuning](notebooks/steg5.html).
 ---
 
 
-
 ## Så slutade tävlingen
 
 Här är den samlade resultattavlan som visar hur de olika generationerna av maskininlärning presterade. Ju lägre siffra, desto bättre:
@@ -528,9 +522,7 @@ Här är den samlade resultattavlan som visar hur de olika generationerna av mas
 ---
 
 
-
 ## Mina lärdomar från projektet
-
 
 
 ### 1. En glasklar utvärdering (eval) är nyckeln till framgång
@@ -556,7 +548,6 @@ Ytterligare träning är ingen garanti för bättre resultat. Även en finjuster
 ---
 
 
-
 ## Vad det säger om AI:s utveckling
 
 Resan genom maskininlärningens utveckling gav mig en mer nyanserad bild av vad framstegen inom AI innebär. Varje ny metod öppnar möjligheter, men hur mycket den tillför beror på uppgiften, informationen den får och arbetet bakom träningen. De stora språkmodellerna har en påtaglig styrka i att kunna ta sig an nya problem direkt. Samtidigt finns mycket kraft i äldre metoder och i modeller som tränats för ett avgränsat ändamål.
@@ -564,7 +555,6 @@ Resan genom maskininlärningens utveckling gav mig en mer nyanserad bild av vad 
 Den viktigaste lärdomen är att framgångsrik AI-utveckling handlar om sund ingenjörskonst. Genom att börja med att förstå problemet, ge modellen rätt förutsättningar och låta mätningar styra, förvandlas modellvalet från en gissningslek till en ren kalkyl. Efter att ha navigerat genom 30 år av AI-historia i detta experiment är det detta som jag fått lite bättre förståelse för – när enklare lösningar räcker och när mer avancerad teknik gör verklig skillnad.
 
 ---
-
 
 
 ## Kod och originalnotebooks
