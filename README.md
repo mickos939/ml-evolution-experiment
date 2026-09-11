@@ -37,7 +37,7 @@ Vi började med att ladda ner ett gigantiskt dataset från Hugging Face med besk
 
 Att rensa bort fel och dubbletter var bara en del av arbetet. Vi behövde också sålla lite bland vilka produkter som skulle ingå i experimentet. Om billiga produkter och ett par stora kategorier dominerar så får modellerna sämre möjlighet att lära sig resten av materialet.
 
-Därför gjorde vi ett **viktat slumpmässigt urval**. Dyrare produkter fick större chans att komma med, medan de dominerande kategorierna Automotive och Tools and Home Improvement fick lägre urvalsvikt. Syftet var att ge modellerna ett bredare material att lära sig av.
+Därför gjorde vi ett **viktat slumpmässigt urval**. Dyrare produkter fick större chans att komma med, medan de dominerande kategorierna *Automotive* och *Tools and Home Improvement* fick lägre urvalsvikt. Syftet var att ge modellerna ett bredare material att lära sig av.
 
 <details><summary><strong>Teknisk fördjupning: Så styrdes urvalet av produkter</strong></summary>
 
@@ -78,11 +78,11 @@ Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
 
 ### LLM-driven förädling
 
-Amazon-beskrivningar är kända för att vara spretiga. Säljtext, HTML-taggar, tekniska specifikationer och tillverkarens skryt blandas i en enda röra.
+Amazon-beskrivningar över lag är kända för att vara spretiga. *Säljtext, HTML-taggar, tekniska specifikationer och tillverkarens skryt blandas i en enda röra*.
 
-Innan vi tränade en enda prismodell lät vi därför en liten och effektiv språkmodell (GPT-4.1 Nano) agera "digital redaktör". Genom en strikt instruktion tvingades den att koka ner varje kaotisk råtext till fem rena, strukturerade fält: *Title, Category, Brand, Description och Details.*
+Innan vi tränade en enda prismodell lät vi därför en liten, effektiv språkmodell (GPT-4.1 Nano) agera digital redaktör. Genom en strikt instruktion fick den koka ner varje kaotisk råtext till fem rena, strukturerade fält: *Title, Category, Brand, Description och Details.*
 
-Det kallas för *kontextdesign*. Eftersom språkmodeller bygger sitt svar steg för steg och påverkas av allt som matas in i dess kontextfönster, blir kvaliteten på indatan helt avgörande. Genom att rensa bort brus och ge modellerna optimalt strukturerad information skapar vi de bästa förutsättningarna för att det ska lära sig.
+Detta kallas för *datatvätt* och *feature engineering*. Eftersom maskininlärningsmodeller bygger sina mönster baserat på de exempel de matas med, blir kvaliteten på träningsdatan helt avgörande för hur bra modellen presterar. Genom att rensa bort brus och strukturera informationen optimalt skapar vi de bästa förutsättningarna för att modellen ska lära sig rätt samband.
 
 <details><summary><strong>Teknisk fördjupning: Instruktionen till språkmodellen</strong></summary>
 
