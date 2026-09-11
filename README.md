@@ -78,7 +78,7 @@ Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
 
 ### LLM-driven förädling
 
-Amazon-beskrivningar över lag är kända för att vara spretiga. *Säljtext, HTML-taggar, tekniska specifikationer och tillverkarens skryt blandas i en enda röra*.
+Amazon-beskrivningar över lag är kända för att vara spretiga. Säljtext, HTML-taggar, tekniska specifikationer och tillverkarens skryt blandas i en enda röra.
 
 Innan vi tränade en enda prismodell lät vi därför en liten, effektiv språkmodell (GPT-4.1 Nano) agera digital redaktör. Genom en strikt instruktion fick den koka ner varje kaotisk råtext till fem rena, strukturerade fält: *Title, Category, Brand, Description och Details.*
 
@@ -113,7 +113,7 @@ Cost: 0.006 cents
 
 Se mer: [Steg 2 – LLM-förädling](notebooks/steg2.html).
 
-Poängen här är att hundratusentals spretiga produktposter kunde pressas in i exakt samma struktur innan de nådde prismodellerna. Det gjorde det mycket lättare för dem att lära sig.
+Poängen här är att hundratusentals spretiga produktposter kunde pressas in i exakt samma struktur innan de nådde prismodellerna. Det gjorde det mycket lättare för dem.
 
 </details>
 
@@ -144,7 +144,7 @@ Om den mänskliga gissningen ($87,62) är riktmärket som vi jämför mot, så �
 
 ### Linjär regression med enkel information
 
-Går det att förbättra gissningen genom att använda en linjär regressionsmodell och ge den två egenskaper att jobba med: produktens vikt och antalet tecken i beskrivningen?
+Går det att förbättra gissningen genom att använda en linjär regressionsmodell och ge den två enkla egenskaper att jobba med: produktens vikt och antalet tecken i beskrivningen?
 
 - **Resultat (Enkel regression):** Ett genomsnittligt fel på **101,56 dollar**.
 
@@ -197,9 +197,9 @@ Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
 
 ## Rond 2: När modellen får tolka orden händer något
 
-Hur får man en matematisk regressionsformel att förstå skriven text? Vi testar den klassiska metoden **Bag-of-Words**.
+Hur får man en matematisk regressionsformel att förstå skriven text? Vi testar här den klassiska metoden **Bag-of-Words**.
 
-Vi skapade en lista på de 2 000 vanligaste orden i våra nystädade produktbeskrivningar. Varje produkt översätts sedan till en lång vektor (en rad med 2 000 siffror) som helt enkelt anger hur ofta ord som till exempel *luxury*, *LED*, *leather* eller *plastic* förekommer i texten.
+Vi skapade en lista på de 2 000 vanligaste betydelsebärande orden i våra nystädade produktbeskrivningar. Varje produkt översätts sedan till en lång vektor (en rad med 2 000 siffror) som helt enkelt anger hur ofta ord som till exempel *luxury*, *LED*, *leather* eller *plastic* förekommer i texten.
 
 - **Resultat (Bag-of-Words):** Felet rasar till **76,81 dollar**.
 
@@ -209,9 +209,10 @@ Vi skapade en lista på de 2 000 vanligaste orden i våra nystädade produktbesk
 
 Detta är ett otroligt ögonblick. En enkel, klassisk regressionsmodell som körs på en bråkdel av en sekund har precis **slagit den mänskliga referenspunkten** (Eds $87,62) med nästan 11 dollar.
 
-Varför når den här enkla metoden så långt? Därför att enskilda nyckelord i texten har en stark koppling till produktens värde. I det här fallet räknas antal förekomster av ord som till exempel *luxury*, *LED*, *leather*, *plastic*, och modellen upptäcker eventuella samband med priset.
+Varför når den här enkla metoden så långt? Därför att enskilda nyckelord i texten har en stark koppling till produktens värde. I det här fallet räknas antal förekomster av ord som *luxury*, *LED*, *leather*, *plastic*, och modellen upptäcker eventuella samband med priset.
 
-Men metoden har en svaghet: den saknar sammanhang. Bag-of-Words är helt *kontextoberoende*. Ordet 'fil' får till exempel exakt samma representation oavsett om texten handlar om en *datorfil*, en *körfil på motorvägen* eller en skål med *frukostfil*. Till skillnad från moderna språkmodeller så har modellerna i denna rond inte förmågan att låta orden färgas av varandra.
+Men metoden har en svaghet: den saknar sammanhang. Bag-of-Words är helt *kontextoberoende*. Ordet 'fil' får till exempel exakt samma representation oavsett om texten handlar om en *datorfil*, en *körfil på motorvägen* eller en skål med *frukostfil*. 
+Till skillnad från moderna språkmodeller har modellerna i denna rond inte förmågan att låta orden färgas av varandra.
 
 <details><summary><strong>Teknisk fördjupning: Så blir texten 2 000 siffror</strong></summary>
 
