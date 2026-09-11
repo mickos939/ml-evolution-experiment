@@ -146,8 +146,8 @@ Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
 </details>
 
 <p align="center">
-  <img src="assets/categories.png" width="35%" alt="Produktkategorier">
-  <img src="assets/prisfordelning.png" width="63%" alt="Prisfördelning">
+  <img src="assets/categories.png" width="36%" alt="Produktkategorier">
+  <img src="assets/prisfordelning.png" width="62%" alt="Prisfördelning">
 </p>
 
 *Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på **820 000 produkter** (högra bilden). Kategoriernas fördelning efter det viktade urvalet. Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter (vänstra bilden).*
@@ -340,7 +340,8 @@ Som motvikt till de stora språkmodellerna byggde vi även två neurala nätverk
    
 2. **Vårt djupa nätverk (Deep NN):** En betydligt kraftfullare modell utrustad med residualblock, LayerNorm och dropout. Med sina **289 miljoner parametrar** är detta nät betydligt mer avancerat än det förra – men fortfarande en dvärg i jämförelse med giganter som GPT och Claude. Det har dock en enorm fördel: det slipper kunna något annat. Det kan varken skriva dikter eller programmera, det kan bara värdera Amazon-produkter.
 
-- **Resultat (Eget Deep NN):** Vårt skräddarsydda nätverk landade på ett snittfel på **46,49 dollar**.
+- **Resultat (Neuralt nätverk):** Nätverket hade ett snittfel på **63,97 dollar**.
+- **Resultat (Djupt neuralt nätverk):** Vårt skräddarsydda nätverk landade på ett snittfel på **46,49 dollar**.
 
 ![Deep Neural Network – egen Lite-körning](assets/deep_nn_lite.png)
 
