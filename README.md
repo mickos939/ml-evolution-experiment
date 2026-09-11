@@ -13,12 +13,12 @@ Priserna i sig är inte poängen. De fungerar som gemensam måttstock för model
 
 ## Innehåll
 
+- [Grundarbetet – dataurval och kontextdesign](#grundarbetet)
 - [Rond 1 – mänsklig referens och enkla modeller](#rond-1) 
 - [Rond 2 – Bag-of-Words](#rond-2)
 - [Rond 3 – Random Forest och XGBoost](#rond-3)
 - [Rond 4 – neurala nät och språkmodeller](#rond-4)
 - [Rond 5 – fine-tuning](#rond-5)
-- [Grundarbetet – dataurval och kontextdesign](#grundarbetet)
 - [Samlad resultattavla](#resultat)
 - [Mina lärdomar](#lardomar)
 - [Slutsats – vad resan säger om AI](#slutsats)
@@ -29,13 +29,13 @@ Priserna i sig är inte poängen. De fungerar som gemensam måttstock för model
 
 ## Det viktiga grundarbetet: Bearbeta tre miljoner produktbeskrivningar
 
-Innan vi går djupare in på testerna behöver vi titta på det nödvändiga grundarbetet. Maskininlärning bygger helt på principen **skräp in ger skräp ut**, och rå Amazon-data är extremt stökig.
+Innan vi går in på testerna behöver vi titta på det nödvändiga grundarbetet. Maskininlärning bygger mycket på principen **skräp in ger skräp ut**, och rå Amazon-data är extremt stökig.
 
-Vi laddade ner ett gigantiskt dataset från Hugging Face med beskrivningar av cirka 3 miljoner produkter. Vid en manuell granskning hittades till exempel en mikrovågsugn för **21 000 dollar**. Det visade sig vara en professionell TurboChef-ugn avsedd för restaurangkök. Även om priset var korrekt, är det en outlier som skulle förvirra våra modeller. Prisspannet avgränsades därför till mer normala konsumentnivåer: **0,50 till 999,49 dollar**.
+Vi började med att ladda ner ett gigantiskt dataset från Hugging Face med beskrivningar av cirka 3 miljoner produkter. Vid en manuell granskning hittades till exempel en mikrovågsugn för **21 000 dollar**. Det visade sig vara en professionell TurboChef-ugn avsedd för restaurangkök. Även om priset var korrekt, är det en outlier som skulle förvirra våra modeller och göra det svårare för dem att lära sig. Prisspannet avgränsades därför till mer normala konsumentnivåer: **0,50 till 999,49 dollar**.
 
 ### Vilka produkter ska modellen få lära sig av?
 
-Att rensa bort fel och dubbletter var bara en del av arbetet. Vi behövde också välja vilka produkter som skulle ingå i experimentet. Om billiga produkter och ett par stora kategorier dominerar så får modellerna sämre möjlighet att lära sig resten av materialet.
+Att rensa bort fel och dubbletter var bara en del av arbetet. Vi behövde också sålla lite bland vilka produkter som skulle ingå i experimentet. Om billiga produkter och ett par stora kategorier dominerar så får modellerna sämre möjlighet att lära sig resten av materialet.
 
 Därför gjorde vi ett **viktat slumpmässigt urval**. Dyrare produkter fick större chans att komma med, medan de dominerande kategorierna Automotive och Tools and Home Improvement fick lägre urvalsvikt. Syftet var att ge modellerna ett bredare material att lära sig av.
 
@@ -74,7 +74,7 @@ Se mer: [Steg 1 – dataurval och tvätt](notebooks/steg1.html).
   <img src="assets/prisfordelning.png" width="62%" alt="Prisfördelning">
 </p>
 
-*Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på **820 000 produkter** (högra bilden). Kategoriernas fördelning efter det viktade urvalet. Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter (vänstra bilden).*
+*Kategoriernas fördelning efter det viktade urvalet (vänstra bilden). Verktyg, elektronik och fordonsprodukter utgör fortfarande de största grupperna, men urvalet ger också utrymme åt andra typer av produkter. Efter att ha rensat bort extrema outliers och dubbletter återstod ett betydligt mer välbalanserat dataset på **820 000 produkter** (högra bilden).*
 
 ### LLM-driven förädling
 
@@ -140,7 +140,7 @@ Den enklast tänkbara lösningen är en modell som är helt blind. Den struntar 
 
 - **Resultat (Gissa medelpris):** Ett genomsnittligt fel på **106,18 dollar**.
 
-Om den mänskliga gissningen ($87,62) är riktmärket som vi jämför modellerna med så är detta den absoluta lägstanivån. Varje modell som byggs måste prestera betydligt bättre än så för att ha ett existensberättigande.
+Om den mänskliga gissningen ($87,62) är riktmärket som vi jämför mot, så är detta den absoluta lägstanivån. Varje modell som byggs måste prestera betydligt bättre än så för att ha ett existensberättigande.
 
 ### Linjär regression med enkel information
 
@@ -195,11 +195,11 @@ Se mer: [Steg 3 – klassisk maskininlärning](notebooks/steg3.html).
 ---
 
 
-## Rond 2: När modellen får tillgång till "orden" förbättras resultatet
+## Rond 2: När modellen får tolka orden händer något
 
 Hur får man en matematisk regressionsformel att förstå skriven text? Vi testar den klassiska metoden **Bag-of-Words**.
 
-Vi skapade en lista på de 2 000 vanligaste och mest betydelsebärande orden i våra nystädade produktbeskrivningar. Varje produkt översätts sedan till en lång vektor (en rad med 2 000 siffror) som helt enkelt anger hur ofta ord som *luxury*, *LED*, *leather* eller *plastic* förekommer i texten.
+Vi skapade en lista på de 2 000 vanligaste orden i våra nystädade produktbeskrivningar. Varje produkt översätts sedan till en lång vektor (en rad med 2 000 siffror) som helt enkelt anger hur ofta ord som till exempel *luxury*, *LED*, *leather* eller *plastic* förekommer i texten.
 
 - **Resultat (Bag-of-Words):** Felet rasar till **76,81 dollar**.
 
@@ -209,9 +209,9 @@ Vi skapade en lista på de 2 000 vanligaste och mest betydelsebärande orden i v
 
 Detta är ett otroligt ögonblick. En enkel, klassisk regressionsmodell som körs på en bråkdel av en sekund har precis **slagit den mänskliga referenspunkten** (Eds $87,62) med nästan 11 dollar.
 
-Varför når den här enkla metoden så långt? Därför att enskilda nyckelord i texten har en stark koppling till produktens värde. I det här fallet räknas antal förekomster av ord som *luxury*, *LED*, *leather*, *plastic.* 
+Varför når den här enkla metoden så långt? Därför att enskilda nyckelord i texten har en stark koppling till produktens värde. I det här fallet räknas antal förekomster av ord som till exempel *luxury*, *LED*, *leather*, *plastic*, och modellen upptäcker eventuella samband med priset.
 
-Men metoden har en svaghet: den saknar sammanhang. Vår *Bag-of-Words*-metod är helt kontextoberoende. Ordet 'fil' får till exempel exakt samma representation oavsett om texten handlar om en *datorfil*, en *körfil på motorvägen* eller en skål med *frukostfil*. Till skillnad från moderna språkmodeller så har modellerna i denna rond inte förmågan att låta orden färgas av varandra.
+Men metoden har en svaghet: den saknar sammanhang. Bag-of-Words är helt *kontextoberoende*. Ordet 'fil' får till exempel exakt samma representation oavsett om texten handlar om en *datorfil*, en *körfil på motorvägen* eller en skål med *frukostfil*. Till skillnad från moderna språkmodeller så har modellerna i denna rond inte förmågan att låta orden färgas av varandra.
 
 <details><summary><strong>Teknisk fördjupning: Så blir texten 2 000 siffror</strong></summary>
 
@@ -248,7 +248,7 @@ Därefter testade vi den modernare varianten **XGBoost** (Gradient Boosting). Is
 
 *XGBoost lyckas fånga komplexa, icke-linjära mönster i texten, även om de allra dyraste lyxprodukterna fortfarande är svåra att pricka helt rätt.*
 
-I tider av generativ AI är det lätt att avfärda det här som "gammal teknik". Men här har en blixtsnabb och billig modell kapat det ursprungliga blinda felet med nästan 40 dollar. I en skarp produktionsmiljö drar en sådan modell minimalt med resurser och har ett helt förutsägbart beteende (till skillnad från dagens språkmodeller).
+I tider av generativ AI är det lätt att avfärda det här som "gammal teknik". Men här har en blixtsnabb och billig modell kapat det ursprungliga blinda felet med nästan 40 dollar. I en skarp produktionsmiljö drar en sådan här modell minimalt med resurser och har ett helt förutsägbart beteende (till skillnad från dagens språkmodeller).
 
 <details><summary><strong>Teknisk fördjupning: Samma ordrepresentation, en annan modell</strong></summary>
 
@@ -289,7 +289,7 @@ Nu kliver vi in i den moderna djupinlärningens era. Här ställde vi två helt 
 
 ### De generella jättarna (Zero-shot)
 
-Vi bad först några ledande språkmodeller att gissa priset på produkterna utifrån beskrivningen – helt utan att de har fått träna på vårt dataset. De fick förlita sig helt på den allmänna kunskap om varumärken, material och marknadspositionering som de har byggt upp under sin gigantiska förträning.
+Vi bad först några ledande språkmodeller att gissa priset på produkterna utifrån beskrivningen, helt utan att de har fått träna på vårt dataset. De fick förlita sig helt på den allmänna kunskap om varumärken, material och marknadspositionering som de har byggt upp under sin gigantiska förträning.
 
 Resultaten imponerade stort:
 
@@ -333,10 +333,11 @@ Fullständigt sammanhang: [Steg 4 – neurala nät och språkmodeller](notebooks
 Som motvikt till de stora språkmodellerna byggde vi även två neurala nätverk i PyTorch som vi sedan tränade.
 
 1. **Vårt första enkla nätverk (MLP):** Ett klassiskt åttalagers feed-forward-nätverk på ca **669 000 parametrar**. Det tränades snabbt upp och landade på ett mycket respektabelt snittfel på **63,97 dollar**, vilket visade att nätverket framgångsrikt kunde lära sig icke-linjära samband i textrepresentationerna.
-   
-2. **Vårt djupa nätverk (Deep NN):** En betydligt kraftfullare modell utrustad med residualblock, LayerNorm och dropout. Med sina **289 miljoner parametrar** är detta nät betydligt mer avancerat än det förra – men fortfarande en dvärg i jämförelse med giganter som GPT och Claude. Det har dock en enorm fördel: det slipper kunna något annat. Det kan varken skriva dikter eller programmera, det kan bara värdera Amazon-produkter.
 
 - **Resultat (Neuralt nätverk):** Nätverket hade ett snittfel på **63,97 dollar**.
+
+2. **Vårt djupa nätverk (Deep NN):** En betydligt kraftfullare modell utrustad med residualblock, LayerNorm och dropout. Med sina **289 miljoner parametrar** är detta nät betydligt mer avancerat än det förra, men fortfarande en dvärg i jämförelse med giganter som GPT och Claude. Det har dock en enorm fördel: det slipper kunna något annat. Det kan varken skriva dikter eller programmera, det kan bara värdera Amazon-produkter.
+
 - **Resultat (Djupt neuralt nätverk):** Vårt skräddarsydda nätverk landade på ett snittfel på **46,49 dollar**.
 
 ![Deep Neural Network – egen Lite-körning](assets/deep_nn_lite.png)
@@ -428,7 +429,7 @@ Fullständigt sammanhang: [Steg 4 – neurala nät och språkmodeller](notebooks
 ---
 
 
-## Rond 5: En dyrköpt läxa om fine-tuning
+## Rond 5: En dyrköpt läxa med fine-tuning
 
 Efter att ha sett hur bra GPT-4.1 Nano presterade i sitt grundutförande ($62,51) och hur bra vårt djupa neurala nätverk presterade tack vare specialträning ($46,49) kändes nästa steg givet: Vi gör en **fine-tuning** av GPT-4.1 Nano och låter den träna på vårt Amazon-data för att skapa den ultimata prissättaren.
 
@@ -438,7 +439,7 @@ Men här stötte vi på ett lärorikt bakslag.
 
 Under det första testet av den finjusterade modellen visade testresultatet ett genomsnittligt fel på exakt **0,00 dollar**. Hade vi byggt en perfekt AI?
 
-Svaret är tyvärr nej. Vi hade drabbats av en *dataläcka*. Vid skapandet av testprompterna hade vi av misstag råkat behålla facit (priset) i indatan. Modellen hade inte blivit "synsk" – den läste bara innantill från provfrågan.
+Svaret är tyvärr nej. Vi hade drabbats av en *dataläcka*. Vid skapandet av testprompterna hade vi av misstag råkat behålla facit (priset) i indatan. Modellen hade inte blivit "synsk", den läste bara innantill från provfrågan.
 
 ### Det verkliga resultatet
 
